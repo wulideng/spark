@@ -4,7 +4,8 @@
 
 **[➡️ 点击这里在线试用](https://<你的用户名>.github.io/<仓库名>/)**
 
-![工具截图](URL_OF_YOUR_SCREENSHOT.png)
+![工具截图](<img width="1124" height="962" alt="image" src="https://github.com/user-attachments/assets/e617f49e-1e13-44ca-8e24-ec9920c1c0d0" />
+)
 
 ---
 
