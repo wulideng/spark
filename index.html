@@ -5,813 +5,281 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>创意构思工具</title>
     <style>
-        /* --- 基础与变量定义 (v2.0 - 现代/紧凑) --- */
+        /* --- 基础与变量定义 (v2.2 - 灵感矩阵) --- */
         :root {
-            --primary-color: #0D9488; /* 深青色 */
-            --primary-color-dark: #0F766E;
-            --background-color: #F9FAFB; /* 暖灰色背景 */
-            --surface-color: #FFFFFF;
-            --text-color-primary: #1F2937; /* 深灰色文本 */
-            --text-color-secondary: #6B7280; /* 中灰色文本 */
-            --text-color-light: #9CA3AF;
-            --border-color: #E5E7EB;
-            --warning-color: #E11D48;
-            --success-color: #16A34A;
-            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            --primary-color: #0D9488; --primary-color-dark: #0F766E; --background-color: #F9FAFB;
+            --surface-color: #FFFFFF; --text-color-primary: #1F2937; --text-color-secondary: #6B7280;
+            --text-color-light: #9CA3AF; --border-color: #E5E7EB; --warning-color: #E11D48;
+            --success-color: #16A34A; --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             --border-radius: 6px;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: var(--font-family);
-            background: var(--background-color);
-            line-height: 1.5;
-            color: var(--text-color-primary);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            font-family: var(--font-family); background: var(--background-color);
+            line-height: 1.5; color: var(--text-color-primary);
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
-
-        /* --- 布局 (更紧凑) --- */
-        .container {
-            max-width: 960px; /* 减小最大宽度 */
-            margin: 0 auto;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .main {
-            flex: 1;
-            padding: 40px; /* 减小内边距 */
-            background: var(--surface-color);
-        }
-        
-        /* --- 头部与进度条 --- */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .header h1 {
-            font-size: 28px; /* 减小字号 */
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .header p {
-            color: var(--text-color-secondary);
-            font-size: 15px;
-        }
-
-        .progress {
-            height: 4px;
-            background: #F3F4F6;
-            margin: 24px auto 0;
-            border-radius: 2px;
-            max-width: 320px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--primary-color);
-            width: 0%;
-            transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            border-radius: 2px;
-        }
-
-        /* --- 步骤与切换动画 --- */
-        .step {
-            display: none;
-        }
-
-        .step.active {
-            display: block;
-        }
-        
+        .container { max-width: 960px; margin: 0 auto; display: flex; min-height: 100vh; }
+        .main { flex: 1; padding: 40px; background: var(--surface-color); }
+        .header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .header h1 { font-size: 28px; margin-bottom: 8px; font-weight: 700; }
+        .header p { color: var(--text-color-secondary); font-size: 15px; }
+        .author-link { font-size: 14px; color: var(--text-color-secondary); margin-top: 12px; }
+        .author-link a { color: var(--text-color-primary); font-weight: 500; text-decoration: none; transition: color 0.2s ease; }
+        .author-link a:hover { color: var(--primary-color); text-decoration: underline; }
+        .progress { height: 4px; background: #F3F4F6; margin: 24px auto 0; border-radius: 2px; max-width: 320px; }
+        .progress-fill { height: 100%; background: var(--primary-color); width: 0%; transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1); border-radius: 2px; }
+        .step { display: none; }
+        .step.active { display: block; }
         .step.animate-in { animation: fadeIn 0.5s ease-out forwards; }
         .step.animate-out { animation: fadeOut 0.3s ease-in forwards; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-10px); }
-        }
-
-        /* --- 步骤内部样式 --- */
-        .step-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .step-number {
-            width: 36px;
-            height: 36px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 16px;
-            margin-right: 16px;
-            flex-shrink: 0;
-        }
-
-        .step-info h3 {
-            font-size: 20px;
-            color: var(--text-color-primary);
-            margin-bottom: 2px;
-        }
-
-        .step-info p {
-            color: var(--text-color-secondary);
-            font-size: 14px;
-        }
-
-        .timer {
-            margin-left: auto;
-            font-size: 16px;
-            color: var(--primary-color);
-            font-weight: 600;
-            background: #F0FDFA;
-            padding: 5px 12px;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .timer.warning {
-            color: var(--warning-color);
-            background: #FFF1F2;
-        }
-
-        /* --- 表单元素 --- */
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-color-primary);
-            margin-bottom: 8px;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            font-size: 14px;
-            font-family: inherit;
-            resize: vertical;
-            background: #F9FAFB;
-            transition: all 0.25s ease-out;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--surface-color);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
-        }
-
-        .form-group textarea {
-            min-height: 90px;
-        }
-
-        /* --- 提示与建议 --- */
-        .suggestions {
-            margin-top: 12px;
-            padding: 10px 12px;
-            background: #F9FAFB;
-            border-radius: 4px;
-        }
-
-        .suggestions h4 {
-            font-size: 13px;
-            color: var(--text-color-secondary);
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-
-        .suggestion-item {
-            font-size: 13px;
-            color: var(--text-color-light);
-            margin-bottom: 4px;
-            cursor: pointer;
-            padding: 3px 0;
-            transition: color 0.2s ease;
-        }
-
-        .suggestion-item:hover {
-            color: var(--primary-color);
-        }
-
-        /* --- 按钮 --- */
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .btn {
-            padding: 10px 24px;
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease-out;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-color-dark);
-            transform: translateY(-1px);
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
+        .step-header { display: flex; align-items: center; margin-bottom: 30px; }
+        .step-number { width: 36px; height: 36px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; margin-right: 16px; flex-shrink: 0; }
+        .step-info h3 { font-size: 20px; color: var(--text-color-primary); margin-bottom: 2px; }
+        .step-info p { color: var(--text-color-secondary); font-size: 14px; }
+        .timer { margin-left: auto; font-size: 16px; color: var(--primary-color); font-weight: 600; background: #F0FDFA; padding: 5px 12px; border-radius: 16px; transition: all 0.3s ease; }
+        .timer.warning { color: var(--warning-color); background: #FFF1F2; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--text-color-primary); margin-bottom: 8px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 14px; font-family: inherit; resize: vertical; background: #F9FAFB; transition: all 0.25s ease-out; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); background: var(--surface-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
+        .form-group textarea { min-height: 90px; }
         
-        .btn-secondary {
-            background: var(--surface-color);
-            color: var(--text-color-secondary);
-            border: 1px solid var(--border-color);
+        /* --- V2：灵感矩阵样式 --- */
+        .inspiration-group { margin-top: 12px; }
+        .inspiration-group p { font-size: 13px; font-weight: 500; color: var(--text-color-secondary); margin-bottom: 8px; }
+        .inspiration-triggers button {
+            background: none; border: 1px solid var(--border-color); color: var(--text-color-secondary);
+            font-size: 13px; font-weight: 500; padding: 4px 10px; border-radius: 4px; cursor: pointer;
+            transition: all 0.2s ease; margin-right: 6px;
+        }
+        .inspiration-triggers button:hover { background: #F3F4F6; color: var(--text-color-primary); }
+        .inspiration-suggestions {
+            margin-top: 12px; padding: 12px; background: #F9FAFB;
+            border-radius: 4px; display: none; /* 默认隐藏 */
+        }
+        .suggestion-item-random {
+            font-size: 13px; color: var(--text-color-secondary); cursor: pointer;
+            margin-bottom: 8px; transition: color 0.2s ease;
+        }
+        .suggestion-item-random:hover { color: var(--primary-color); }
+        .suggestion-item-random:last-child { margin-bottom: 0; }
+        .inspiration-refresh {
+            margin-top: 12px; padding-top: 8px; border-top: 1px dashed var(--border-color);
+            text-align: right;
+        }
+        .btn-refresh {
+            background: none; border: none; color: var(--primary-color); font-size: 13px;
+            cursor: pointer; font-weight: 500;
         }
 
-        .btn-secondary:hover {
-            background: #F9FAFB;
-            border-color: #D1D5DB;
-            color: var(--text-color-primary);
-        }
-
-        /* --- 结果页 --- */
-        .result {
-            background: #F9FAFB;
-            border-radius: var(--border-radius);
-            padding: 30px;
-            margin-top: 20px;
-        }
-
-        .result h3 {
-            color: var(--text-color-primary);
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
-
-        .result-item {
-            background: var(--surface-color);
-            border-radius: var(--border-radius);
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 3px solid var(--primary-color);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .result-label {
-            font-weight: 600;
-            color: var(--text-color-primary);
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-
-        .result-content {
-            color: var(--text-color-secondary);
-            font-size: 14px;
-            white-space: pre-wrap;
-        }
-
-        /* --- 浮动总结窗口 (更紧凑) --- */
-        .floating-summary {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 260px; /* 减小宽度 */
-            max-height: 400px;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            z-index: 1000;
-            transform: translateX(120%);
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
+        .buttons { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .btn { padding: 10px 24px; border: none; border-radius: var(--border-radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease-out; }
+        .btn-primary { background: var(--primary-color); color: white; box-shadow: var(--shadow-sm); }
+        .btn-primary:hover { background: var(--primary-color-dark); transform: translateY(-1px); }
+        .btn-secondary { background: var(--surface-color); color: var(--text-color-secondary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: #F9FAFB; border-color: #D1D5DB; color: var(--text-color-primary); }
+        .result { background: #F9FAFB; border-radius: var(--border-radius); padding: 30px; margin-top: 20px; }
+        .result h3 { color: var(--text-color-primary); margin-bottom: 20px; font-size: 18px; }
+        .result-item { background: var(--surface-color); border-radius: var(--border-radius); padding: 16px; margin-bottom: 12px; border-left: 3px solid var(--primary-color); box-shadow: var(--shadow-sm); }
+        .result-label { font-weight: 600; color: var(--text-color-primary); margin-bottom: 6px; font-size: 14px; }
+        .result-content { color: var(--text-color-secondary); font-size: 14px; white-space: pre-wrap; }
+        .floating-summary { position: fixed; top: 20px; right: 20px; width: 260px; max-height: 400px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow-md); z-index: 1000; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); overflow: hidden; display: flex; flex-direction: column; }
         .floating-summary.visible { transform: translateX(0); }
-
-        .floating-header {
-            padding: 8px 12px;
-            background: #F9FAFB;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .floating-header h3 {
-            font-size: 13px;
-            color: var(--text-color-primary);
-            margin: 0;
-            font-weight: 600;
-        }
-
-        .close-btn {
-            background: none; border: none; font-size: 18px;
-            color: var(--text-color-light); cursor: pointer; padding: 2px;
-            width: 22px; height: 22px; display: flex; align-items: center;
-            justify-content: center; border-radius: 4px; transition: all 0.2s ease;
-        }
-
+        .floating-header { padding: 8px 12px; background: #F9FAFB; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .floating-header h3 { font-size: 13px; color: var(--text-color-primary); margin: 0; font-weight: 600; }
+        .close-btn { background: none; border: none; font-size: 18px; color: var(--text-color-light); cursor: pointer; padding: 2px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s ease; }
         .close-btn:hover { background: #E5E7EB; color: var(--text-color-primary); }
-
-        .floating-content {
-            padding: 8px;
-            overflow-y: auto;
-        }
-
-        .step-summary {
-            margin-bottom: 6px;
-            padding: 8px;
-            background: #F9FAFB;
-            border-radius: 4px;
-            border-left: 2px solid var(--primary-color);
-        }
+        .floating-content { padding: 8px; overflow-y: auto; }
+        .step-summary { margin-bottom: 6px; padding: 8px; background: #F9FAFB; border-radius: 4px; border-left: 2px solid var(--primary-color); }
         .step-summary:last-child { margin-bottom: 0; }
-
-        .step-title {
-            font-weight: 600;
-            color: var(--text-color-primary);
-            margin-bottom: 3px;
-            font-size: 12px;
-        }
-
-        .step-content {
-            color: var(--text-color-secondary);
-            font-size: 12px;
-            line-height: 1.4;
-        }
-        
-        /* --- 浮动切换按钮 --- */
-        .toggle-summary {
-            position: fixed; top: 20px; right: 20px;
-            background: var(--primary-color); color: white; border: none;
-            width: 40px; height: 40px; border-radius: 20px;
-            font-size: 18px; cursor: pointer; box-shadow: var(--shadow-md);
-            z-index: 999; display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s ease; transform-origin: center;
-        }
-
-        .toggle-summary:hover {
-            background: var(--primary-color-dark);
-            transform: scale(1.1);
-        }
-        
+        .step-title { font-weight: 600; color: var(--text-color-primary); margin-bottom: 3px; font-size: 12px; }
+        .step-content { color: var(--text-color-secondary); font-size: 12px; line-height: 1.4; }
+        .toggle-summary { position: fixed; top: 20px; right: 20px; background: var(--primary-color); color: white; border: none; width: 40px; height: 40px; border-radius: 20px; font-size: 18px; cursor: pointer; box-shadow: var(--shadow-md); z-index: 999; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; transform-origin: center; }
+        .toggle-summary:hover { background: var(--primary-color-dark); transform: scale(1.1); }
         .toggle-summary.hidden { transform: scale(0); opacity: 0; }
-
-        /* --- 响应式设计 --- */
         @media (max-width: 768px) {
-            .main { padding: 25px 20px; }
-            .header h1 { font-size: 24px; }
+            .main { padding: 25px 20px; } .header h1 { font-size: 24px; }
             .step-header { flex-direction: column; align-items: flex-start; }
             .timer { margin-left: 0; margin-top: 15px; }
             .floating-summary { width: 240px; right: 15px; top: 15px; }
             .toggle-summary { right: 15px; top: 15px; }
-            .buttons { flex-direction: column-reverse; gap: 10px; }
-            .btn { width: 100%; }
+            .buttons { flex-direction: column-reverse; gap: 10px; } .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 浮动总结窗口 -->
         <div class="floating-summary" id="floatingSummary">
-            <div class="floating-header">
-                <h3>构思记录</h3>
-                <button class="close-btn" onclick="toggleSummary()">×</button>
-            </div>
-            <div class="floating-content" id="floatingContent">
-                <!-- 动态生成 -->
-            </div>
+            <div class="floating-header"><h3>构思记录</h3><button class="close-btn" onclick="toggleSummary()">×</button></div>
+            <div class="floating-content" id="floatingContent"></div>
         </div>
-
-        <!-- 切换按钮 -->
         <button class="toggle-summary hidden" id="toggleBtn" onclick="toggleSummary()">📝</button>
-
         <div class="main">
             <div class="header">
                 <h1>创意构思工具</h1>
                 <p>从常规到独特的20分钟构思法</p>
-                <div class="progress">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
+                <p class="author-link">由 <a href="https://github.com/wulideng" target="_blank" rel="noopener noreferrer">wulideng</a> 创作</p>
+                <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
             </div>
 
             <!-- 开始页 -->
             <div class="step active" id="step0">
-                <div class="step-header">
-                    <div class="step-number">0</div>
-                    <div class="step-info">
-                        <h3>确定主题</h3>
-                        <p>你想创作什么？</p>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="theme">创作主题</label>
-                    <input type="text" id="theme" placeholder="例如：花火大会、咖啡店、雨夜...">
-                </div>
-                <div class="buttons">
-                    <div></div>
-                    <button class="btn btn-primary" onclick="nextStep()">开始构思</button>
-                </div>
+                <div class="step-header"><div class="step-number">0</div><div class="step-info"><h3>确定主题</h3><p>你想创作什么？</p></div></div>
+                <div class="form-group"><label for="theme">创作主题</label><input type="text" id="theme" placeholder="例如：花火大会、咖啡店、雨夜..."></div>
+                <div class="buttons"><div></div><button class="btn btn-primary" onclick="nextStep()">开始构思</button></div>
             </div>
 
             <!-- 第1步：选定锚点 -->
             <div class="step" id="step1">
-                <div class="step-header">
-                    <div class="step-number">1</div>
-                    <div class="step-info">
-                        <h3>选定核心锚点</h3>
-                        <p>选择一个具体的物品、地点或人物作为故事核心</p>
-                    </div>
-                    <div class="timer" id="timer1">3:00</div>
-                </div>
-                <div class="form-group">
-                    <label for="anchor">核心锚点</label>
-                    <input type="text" id="anchor" placeholder="一个具体的物品、地点或人物">
-                    <div class="suggestions">
-                        <h4>提示：</h4>
-                        <div class="suggestion-item" onclick="fillSuggestion('anchor', '一件旧衣服')">• 一件旧衣服</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('anchor', '一把雨伞')">• 一把雨伞</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('anchor', '一张老照片')">• 一张老照片</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('anchor', '一个特定的座位')">• 一个特定的座位</div>
+                <div class="step-header"><div class="step-number">1</div><div class="step-info"><h3>选定核心锚点</h3><p>选择一个具体的物品、地点或人物作为故事核心</p></div><div class="timer" id="timer1">3:00</div></div>
+                <div class="form-group"><label for="anchor">核心锚点</label><input type="text" id="anchor" placeholder="一个具体的物品、地点或人物"></div>
+                <div class="form-group"><label for="anchorReason">为什么选择这个？</label><textarea id="anchorReason" placeholder="这个锚点有什么特别之处？"></textarea>
+                    <!-- 新增：灵感矩阵 -->
+                    <div class="inspiration-group">
+                        <p>💡 需要灵感？</p>
+                        <div class="inspiration-triggers">
+                            <button onclick="showRandomSuggestions('anchorReason', 'keywords')">[ 关键词 ]</button>
+                            <button onclick="showRandomSuggestions('anchorReason', 'imagery')">[ 核心意象 ]</button>
+                            <button onclick="showRandomSuggestions('anchorReason', 'whatIf')">[ 如果… ]</button>
+                        </div>
+                        <div class="inspiration-suggestions" id="suggestions-for-anchorReason"></div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="anchorReason">为什么选择这个？</label>
-                    <textarea id="anchorReason" placeholder="这个锚点有什么特别之处？"></textarea>
-                </div>
-                <div class="buttons">
-                    <button class="btn btn-secondary" onclick="prevStep()">上一步</button>
-                    <button class="btn btn-primary" onclick="nextStep()">下一步 (5分钟)</button>
-                </div>
+                <div class="buttons"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步 (5分钟)</button></div>
             </div>
 
             <!-- 第2步：意外属性 -->
             <div class="step" id="step2">
-                <div class="step-header">
-                    <div class="step-number">2</div>
-                    <div class="step-info">
-                        <h3>赋予意外属性</h3>
-                        <p>给你的锚点一个不寻常的背景或特征</p>
-                    </div>
-                    <div class="timer" id="timer2">5:00</div>
-                </div>
-                <div class="form-group">
-                    <label for="unexpectedAttr">意外属性</label>
-                    <textarea id="unexpectedAttr" placeholder="这个锚点有什么意外的来源、用途或含义？"></textarea>
-                    <div class="suggestions">
-                        <h4>思考方向：</h4>
-                        <div class="suggestion-item" onclick="fillSuggestion('unexpectedAttr', '它属于我从未见过的祖父，是他留下的唯一遗物。')">• 它属于什么特殊的人？</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('unexpectedAttr', '它曾在一次著名的历史事件中出现过。')">• 它有什么隐藏的历史？</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('unexpectedAttr', '它其实是一个用来传递秘密信息的工具。')">• 它的真实身份/用途是什么？</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('unexpectedAttr', '它代表着一个已经无法兑现的承诺。')">• 它代表了什么特殊含义？</div>
+                 <div class="step-header"><div class="step-number">2</div><div class="step-info"><h3>赋予意外属性</h3><p>给你的锚点一个不寻常的背景或特征</p></div><div class="timer" id="timer2">5:00</div></div>
+                <div class="form-group"><label for="unexpectedAttr">意外属性</label><textarea id="unexpectedAttr" placeholder="这个锚点有什么意外的来源、用途或含义？"></textarea>
+                    <div class="inspiration-group">
+                        <p>💡 需要灵感？</p>
+                        <div class="inspiration-triggers">
+                            <button onclick="showRandomSuggestions('unexpectedAttr', 'keywords')">[ 关键词 ]</button>
+                            <button onclick="showRandomSuggestions('unexpectedAttr', 'imagery')">[ 核心意象 ]</button>
+                            <button onclick="showRandomSuggestions('unexpectedAttr', 'whatIf')">[ 如果… ]</button>
+                        </div>
+                        <div class="inspiration-suggestions" id="suggestions-for-unexpectedAttr"></div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="relationship">人物关系</label>
-                    <textarea id="relationship" placeholder="这个属性如何影响人物之间的关系？"></textarea>
-                </div>
-                <div class="buttons">
-                    <button class="btn btn-secondary" onclick="prevStep()">上一步</button>
-                    <button class="btn btn-primary" onclick="nextStep()">下一步 (5分钟)</button>
-                </div>
+                <div class="form-group"><label for="relationship">人物关系</label><textarea id="relationship" placeholder="这个属性如何影响人物之间的关系？"></textarea></div>
+                <div class="buttons"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步 (5分钟)</button></div>
             </div>
-
+            
             <!-- 第3步：氛围营造 -->
             <div class="step" id="step3">
-                <div class="step-header">
-                    <div class="step-number">3</div>
-                    <div class="step-info">
-                        <h3>氛围营造</h3>
-                        <p>设置前期氛围，让观众产生某种预期</p>
-                    </div>
-                    <div class="timer" id="timer3">5:00</div>
-                </div>
-                <div class="form-group">
-                    <label for="atmosphere">前期氛围</label>
-                    <textarea id="atmosphere" placeholder="你想营造什么样的氛围？观众会有什么感受？"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="expectation">观众预期</label>
-                    <textarea id="expectation" placeholder="在这种氛围下，观众会期待发生什么？"></textarea>
-                    <div class="suggestions">
-                        <h4>常见预期：</h4>
-                        <div class="suggestion-item" onclick="fillSuggestion('expectation', '一场浪漫的邂逅即将发生。')">• 浪漫的邂逅</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('expectation', '主角会通过这个物品找回一段温馨的回忆。')">• 温馨的回忆</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('expectation', '主角最终会克服困难，获得成功。')">• 成功的结局</div>
-                        <div class="suggestion-item" onclick="fillSuggestion('expectation', '破裂的关系会因此得到修复。')">• 和谐的关系</div>
+                <div class="step-header"><div class="step-number">3</div><div class="step-info"><h3>氛围营造</h3><p>设置前期氛围，让观众产生某种预期</p></div><div class="timer" id="timer3">5:00</div></div>
+                <div class="form-group"><label for="atmosphere">前期氛围</label><textarea id="atmosphere" placeholder="你想营造什么样的氛围？观众会有什么感受？"></textarea>
+                     <div class="inspiration-group">
+                        <p>💡 需要灵感？</p>
+                        <div class="inspiration-triggers">
+                            <button onclick="showRandomSuggestions('atmosphere', 'imagery')">[ 核心意象 ]</button>
+                            <button onclick="showRandomSuggestions('atmosphere', 'emotion')">[ 情感基调 ]</button>
+                        </div>
+                        <div class="inspiration-suggestions" id="suggestions-for-atmosphere"></div>
                     </div>
                 </div>
-                <div class="buttons">
-                    <button class="btn btn-secondary" onclick="prevStep()">上一步</button>
-                    <button class="btn btn-primary" onclick="nextStep()">下一步 (7分钟)</button>
-                </div>
+                <div class="form-group"><label for="expectation">观众预期</label><textarea id="expectation" placeholder="在这种氛围下，观众会期待发生什么？"></textarea></div>
+                <div class="buttons"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步 (7分钟)</button></div>
             </div>
 
             <!-- 第4步：反转设计 -->
             <div class="step" id="step4">
-                <div class="step-header">
-                    <div class="step-number">4</div>
-                    <div class="step-info">
-                        <h3>反转设计</h3>
-                        <p>在哪个点打破观众的预期？</p>
+                 <div class="step-header"><div class="step-number">4</div><div class="step-info"><h3>反转设计</h3><p>在哪个点打破观众的预期？</p></div><div class="timer" id="timer4">7:00</div></div>
+                <div class="form-group"><label for="twistPoint">反转点</label><textarea id="twistPoint" placeholder="什么时候揭示真相？通过什么方式？"></textarea></div>
+                <div class="form-group"><label for="twistContent">反转内容</label><textarea id="twistContent" placeholder="真相是什么？与预期有什么差距？"></textarea>
+                     <div class="inspiration-group">
+                        <p>💡 需要灵感？</p>
+                        <div class="inspiration-triggers">
+                            <button onclick="showRandomSuggestions('twistContent', 'keywords')">[ 关键词 ]</button>
+                            <button onclick="showRandomSuggestions('twistContent', 'whatIf')">[ 如果… ]</button>
+                             <button onclick="showRandomSuggestions('twistContent', 'conflict')">[ 核心冲突 ]</button>
+                        </div>
+                        <div class="inspiration-suggestions" id="suggestions-for-twistContent"></div>
                     </div>
-                    <div class="timer" id="timer4">7:00</div>
                 </div>
-                <div class="form-group">
-                    <label for="twistPoint">反转点</label>
-                    <textarea id="twistPoint" placeholder="什么时候揭示真相？通过什么方式？"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="twistContent">反转内容</label>
-                    <textarea id="twistContent" placeholder="真相是什么？与预期有什么差距？"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="emotionArc">情绪弧线</label>
-                    <textarea id="emotionArc" placeholder="从开始到结束，主角或观众的情绪如何变化？例如：平静 -> 期待 -> 震惊 -> 悲伤 -> 释然"></textarea>
-                </div>
-                <div class="buttons">
-                    <button class="btn btn-secondary" onclick="prevStep()">上一步</button>
-                    <button class="btn btn-primary" onclick="generateResult()">生成结果</button>
-                </div>
+                <div class="form-group"><label for="emotionArc">情绪弧线</label><textarea id="emotionArc" placeholder="从开始到结束，主角或观众的情绪如何变化？例如：平静 -> 期待 -> 震惊 -> 悲伤 -> 释然"></textarea></div>
+                <div class="buttons"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="generateResult()">生成结果</button></div>
             </div>
 
             <!-- 结果页 -->
             <div class="step" id="step5">
-                <div class="step-header">
-                    <div class="step-number" style="background: var(--success-color);">✓</div>
-                    <div class="step-info">
-                        <h3>构思完成</h3>
-                        <p>你的独特创意已经成型</p>
-                    </div>
-                </div>
-                <div class="result" id="finalResult">
-                    <!-- 动态生成 -->
-                </div>
-                <div class="buttons">
-                    <button class="btn btn-secondary" onclick="exportResult()">导出构思 (TXT)</button>
-                    <button class="btn btn-primary" onclick="restart()">重新开始</button>
-                </div>
+                <div class="step-header"><div class="step-number" style="background: var(--success-color);">✓</div><div class="step-info"><h3>构思完成</h3><p>你的独特创意已经成型</p></div></div>
+                <div class="result" id="finalResult"></div>
+                <div class="buttons"><button class="btn btn-secondary" onclick="exportResult()">导出构思 (TXT)</button><button class="btn btn-primary" onclick="restart()">重新开始</button></div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentStep = 0;
-        let data = {};
-        let timers = {};
+        let currentStep = 0, data = {}, timers = {};
 
-        function updateProgress() {
-            const progress = (currentStep / 5) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-        }
-
-        function updateSidebar() {
-            const floatingContent = document.getElementById('floatingContent');
-            const toggleBtn = document.getElementById('toggleBtn');
-            
-            floatingContent.innerHTML = '';
-
-            const items = [];
-            if (data.theme) items.push(['主题', data.theme]);
-            if (data.anchor) items.push(['核心锚点', data.anchor]);
-            if (data.anchorReason) items.push(['选择理由', data.anchorReason]);
-            if (data.unexpectedAttr) items.push(['意外属性', data.unexpectedAttr]);
-            if (data.relationship) items.push(['人物关系', data.relationship]);
-            if (data.atmosphere) items.push(['前期氛围', data.atmosphere]);
-            if (data.expectation) items.push(['观众预期', data.expectation]);
-            if (data.twistPoint) items.push(['反转点', data.twistPoint]);
-            if (data.twistContent) items.push(['反转内容', data.twistContent]);
-            if (data.emotionArc) items.push(['情绪弧线', data.emotionArc]);
-
-            if (items.length > 0) {
-                toggleBtn.classList.remove('hidden');
-            } else {
-                toggleBtn.classList.add('hidden');
+        // --- V2：灵感矩阵库 ---
+        const inspirationLibrary = {
+            anchorReason: {
+                keywords: ["承诺", "秘密", "遗忘", "重逢", "告别", "匿名", "巧合", "传承", "误解", "救赎"],
+                imagery: ["跳蚤市场的角落", "落满灰尘的阁楼", "一个反复出现的梦", "童年好友的赠礼", "匿名寄来的包裹", "一张泛黄的旧地图"],
+                whatIf: ["如果这是陌生人错给你的东西？", "如果它来自未来？", "如果它能带你回到某个特定时刻？", "如果它是某个罪案的关键证据？"]
+            },
+            unexpectedAttr: {
+                keywords: ["伪装", "信物", "钥匙", "诅咒", "庇护", "能量源", "双刃剑", "封印", "地图", "倒计时"],
+                imagery: ["隐藏的夹层", "月光下浮现的文字", "能记录情绪的材质", "并非来自地球的金属", "两个世界的交汇点", "古老仪式的道具"],
+                whatIf: ["如果它能与特定的人产生共鸣？", "如果它有自己的意识？", "如果它的作用和表面完全相反？", "如果全世界只有一个地方能摧毁它？"]
+            },
+            atmosphere: {
+                imagery: ["午后慵懒的爵士乐", "暴雨夜摇曳的路灯", "庆典上空绚烂的烟花", "废弃游乐园的锈迹", "清晨林间的薄雾", "深夜便利店的灯光", "拥挤但沉默的地铁车厢"],
+                emotion: ["温暖怀旧", "紧张悬疑", "欢乐希望", "孤独伤感", "宁静祥和", "压抑未知", "轻松治愈"]
+            },
+            twistContent: {
+                keywords: ["身份互换", "记忆篡改", "虚拟世界", "背叛", "宿命", "共生", "冒名顶替", "无人生还", "双重间谍"],
+                conflict: ["恩人即是仇人", "拯救即是毁灭", "追求的圣物是邪物", "可信的伙伴是幻觉", "打破的诅咒是庇护", "对抗的敌人是自己"],
+                whatIf: ["如果主角才是反派？", "如果整个故事都是一场梦或实验？", "如果“死者”并没有真的死去？", "如果目标达成后会带来更大灾难？"]
             }
+        };
 
-            items.forEach(([title, content]) => {
-                const item = document.createElement('div');
-                item.className = 'step-summary';
-                item.innerHTML = `
-                    <div class="step-title">${title}</div>
-                    <div class="step-content">${truncateText(content, 45)}</div>
-                `;
-                floatingContent.appendChild(item);
-            });
-        }
-
-        function toggleSummary() {
-            document.getElementById('floatingSummary').classList.toggle('visible');
-        }
-
-        function truncateText(text, maxLength) {
-            if (!text) return '';
-            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-        }
-
-        function showStep(stepIndex) {
-            const currentActiveStep = document.querySelector('.step.active');
-            
-            if (currentActiveStep && currentActiveStep.id !== `step${stepIndex}`) {
-                currentActiveStep.classList.add('animate-out');
-                setTimeout(() => {
-                    currentActiveStep.classList.remove('active', 'animate-out');
-                    
-                    const nextStepEl = document.getElementById(`step${stepIndex}`);
-                    nextStepEl.classList.add('active', 'animate-in');
-                    
-                    setTimeout(() => {
-                        nextStepEl.classList.remove('animate-in');
-                    }, 500);
-
-                }, 300);
-            } else {
-                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-                document.getElementById(`step${stepIndex}`).classList.add('active');
-            }
-            
-            updateProgress();
-            updateSidebar();
-        }
-
-        function startTimer(step, minutes) {
-            if (timers[step]) clearInterval(timers[step]);
-            
-            let seconds = minutes * 60;
-            const timerEl = document.getElementById(`timer${step}`);
-            timerEl.classList.remove('warning');
-            
-            timers[step] = setInterval(() => {
-                if (seconds < 0) {
-                    clearInterval(timers[step]);
-                    timerEl.textContent = '时间到!';
-                    return;
-                }
-
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-                
-                if (seconds <= 30) {
-                    timerEl.classList.add('warning');
-                }
-                
-                seconds--;
-            }, 1000);
-        }
-
-        function stopAllTimers() {
-             Object.values(timers).forEach(timer => clearInterval(timer));
-             timers = {};
-        }
+        const updateProgress=()=>document.getElementById('progressFill').style.width=(currentStep/5)*100+'%';
+        function updateSidebar(){const t=document.getElementById("floatingContent"),e=document.getElementById("toggleBtn");t.innerHTML="";const n=[{k:"theme",v:"主题"},{k:"anchor",v:"核心锚点"},{k:"anchorReason",v:"选择理由"},{k:"unexpectedAttr",v:"意外属性"},{k:"relationship",v:"人物关系"},{k:"atmosphere",v:"前期氛围"},{k:"expectation",v:"观众预期"},{k:"twistPoint",v:"反转点"},{k:"twistContent",v:"反转内容"},{k:"emotionArc",v:"情绪弧线"}];let o=!1;n.forEach(e=>{if(data[e.k]){o=!0;const n=document.createElement("div");n.className="step-summary",n.innerHTML=`<div class="step-title">${e.v}</div><div class="step-content">${truncateText(data[e.k],45)}</div>`,t.appendChild(n)}}),e.classList.toggle("hidden",!o)}
+        const toggleSummary=()=>document.getElementById("floatingSummary").classList.toggle("visible");
+        const truncateText=(t,e)=>t?t.length>e?t.substring(0,e)+"...":t:"";
+        function showStep(t){const e=document.querySelector(".step.active");e&&"step"+t!==e.id?(e.classList.add("animate-out"),setTimeout(()=>{e.classList.remove("active","animate-out");const o=document.getElementById("step"+t);o.classList.add("active","animate-in"),setTimeout(()=>o.classList.remove("animate-in"),500)},300)):(document.querySelectorAll(".step").forEach(t=>t.classList.remove("active")),document.getElementById("step"+t).classList.add("active")),updateProgress(),updateSidebar()}
+        function startTimer(t,e){timers[t]&&clearInterval(timers[t]);let o=60*e;const n=document.getElementById("timer"+t);n.classList.remove("warning"),timers[t]=setInterval(()=>{if(o<0)return clearInterval(timers[t]),void(n.textContent="时间到!");const e=Math.floor(o/60),s=o%60;n.textContent=`${e}:${s.toString().padStart(2,"0")}`,o<=30&&n.classList.add("warning"),o--},1e3)}
+        const stopAllTimers=()=>{Object.values(timers).forEach(t=>clearInterval(t)),timers={}};
+        function collectDataForStep(t){const e="step"+t;document.querySelectorAll("#"+e+" input, #"+e+" textarea").forEach(t=>{t.id&&(data[t.id]=t.value.trim())})}
+        function nextStep(){collectDataForStep(currentStep);if(0===currentStep&&!data.theme)return void alert("请输入创作主题");if(1===currentStep&&!data.anchor)return void alert("请输入核心锚点");currentStep<5&&(currentStep++,showStep(currentStep)),1===currentStep?startTimer(1,3):2===currentStep?startTimer(2,5):3===currentStep?startTimer(3,5):4===currentStep&&startTimer(4,7)}
+        function prevStep(){currentStep>0&&(collectDataForStep(currentStep),currentStep--,showStep(currentStep))}
+        function generateResult(){collectDataForStep(4),stopAllTimers(),currentStep=5,showStep(5);const t=t=>t?t.replace(/\n/g,"<br>"):"<em>未填写</em>";document.getElementById("finalResult").innerHTML=[{l:"主题",c:data.theme},{l:"核心锚点",c:data.anchor},{l:"选择理由",c:data.anchorReason},{l:"意外属性",c:data.unexpectedAttr},{l:"人物关系",c:data.relationship},{l:"前期氛围",c:data.atmosphere},{l:"观众预期",c:data.expectation},{l:"反转设计",c:`<b>反转点：</b><br>${t(data.twistPoint)}<br><br><b>反转内容：</b><br>${t(data.twistContent)}`},{l:"情绪弧线",c:data.emotionArc}].map(e=>`<div class="result-item"><div class="result-label">${e.l}</div><div class="result-content">${t(e.c)}</div></div>`).join("")}
+        function fillSuggestion(t,e,o=!1){const n=document.getElementById(t);o?n.value+=e:n.value=e,n.focus()}
         
-        function collectDataForStep(step) {
-            if (step === 0) data.theme = document.getElementById('theme').value.trim();
-            else if (step === 1) {
-                data.anchor = document.getElementById('anchor').value.trim();
-                data.anchorReason = document.getElementById('anchorReason').value.trim();
-            } else if (step === 2) {
-                data.unexpectedAttr = document.getElementById('unexpectedAttr').value.trim();
-                data.relationship = document.getElementById('relationship').value.trim();
-            } else if (step === 3) {
-                data.atmosphere = document.getElementById('atmosphere').value.trim();
-                data.expectation = document.getElementById('expectation').value.trim();
-            } else if (step === 4) {
-                data.twistPoint = document.getElementById('twistPoint').value.trim();
-                data.twistContent = document.getElementById('twistContent').value.trim();
-                data.emotionArc = document.getElementById('emotionArc').value.trim();
-            }
+        // --- V2：灵感矩阵功能 ---
+        function showRandomSuggestions(fieldId, category) {
+            const suggestions = inspirationLibrary[fieldId]?.[category];
+            const container = document.getElementById(`suggestions-for-${fieldId}`);
+            if (!suggestions || !container) return;
+
+            container.style.display = 'block'; // 显示容器
+            const shuffled = [...suggestions].sort(() => 0.5 - Math.random());
+            const count = category === 'keywords' ? 4 : 2;
+            const selected = shuffled.slice(0, count);
+
+            let contentHTML = '';
+            selected.forEach(text => {
+                const isKeyword = category === 'keywords';
+                // 关键词点击是追加，其他是覆盖
+                contentHTML += `<div class="suggestion-item-random" onclick="fillSuggestion('${fieldId}', '${text.replace(/'/g, "\\'")}', ${isKeyword})">${text}</div>`;
+            });
+
+            contentHTML += `<div class="inspiration-refresh"><button class="btn-refresh" onclick="showRandomSuggestions('${fieldId}', '${category}')">↻ 换一批</button></div>`;
+            container.innerHTML = contentHTML;
         }
 
-        function nextStep() {
-            collectDataForStep(currentStep);
-
-            if (currentStep === 0 && !data.theme) { alert('请输入创作主题'); return; }
-            if (currentStep === 1 && !data.anchor) { alert('请输入核心锚点'); return; }
-
-            if (currentStep < 5) {
-                currentStep++;
-                showStep(currentStep);
-            }
-            
-            if (currentStep === 1) startTimer(1, 3);
-            else if (currentStep === 2) startTimer(2, 5);
-            else if (currentStep === 3) startTimer(3, 5);
-            else if (currentStep === 4) startTimer(4, 7);
-        }
-
-        function prevStep() {
-            if (currentStep > 0) {
-                collectDataForStep(currentStep);
-                currentStep--;
-                showStep(currentStep);
-            }
-        }
-
-        function generateResult() {
-            collectDataForStep(4);
-            
-            stopAllTimers();
-            currentStep = 5;
-            showStep(5);
-            
-            const renderContent = (content) => content ? content.replace(/\n/g, '<br>') : '<em>未填写</em>';
-
-            document.getElementById('finalResult').innerHTML = `
-                <h3>你的创意构思</h3>
-                <div class="result-item"><div class="result-label">主题</div><div class="result-content">${renderContent(data.theme)}</div></div>
-                <div class="result-item"><div class="result-label">核心锚点</div><div class="result-content">${renderContent(data.anchor)}</div></div>
-                <div class="result-item"><div class="result-label">选择理由</div><div class="result-content">${renderContent(data.anchorReason)}</div></div>
-                <div class="result-item"><div class="result-label">意外属性</div><div class="result-content">${renderContent(data.unexpectedAttr)}</div></div>
-                <div class="result-item"><div class="result-label">人物关系</div><div class="result-content">${renderContent(data.relationship)}</div></div>
-                <div class="result-item"><div class="result-label">前期氛围</div><div class="result-content">${renderContent(data.atmosphere)}</div></div>
-                <div class="result-item"><div class="result-label">观众预期</div><div class="result-content">${renderContent(data.expectation)}</div></div>
-                <div class="result-item"><div class="result-label">反转设计</div><div class="result-content"><b>反转点：</b><br>${renderContent(data.twistPoint)}<br><br><b>反转内容：</b><br>${renderContent(data.twistContent)}</div></div>
-                <div class="result-item"><div class="result-label">情绪弧线</div><div class="result-content">${renderContent(data.emotionArc)}</div></div>
-            `;
-        }
-
-        function fillSuggestion(fieldId, value) {
-            const field = document.getElementById(fieldId);
-            field.value = value;
-            field.focus();
-        }
-
-        function exportResult() {
-            const dataToExport = [
-                { label: "主题", content: data.theme },
-                { label: "核心锚点", content: data.anchor },
-                { label: "选择理由", content: data.anchorReason },
-                { label: "意外属性", content: data.unexpectedAttr },
-                { label: "人物关系", content: data.relationship },
-                { label: "前期氛围", content: data.atmosphere },
-                { label: "观众预期", content: data.expectation },
-                { label: "反转点", content: data.twistPoint },
-                { label: "反转内容", content: data.twistContent },
-                { label: "情绪弧线", content: data.emotionArc },
-            ];
-
-            const formattedContent = dataToExport
-                .map(item => `${item.label}:\n${item.content || '未填写'}\n`)
-                .join('\n--------------------\n\n');
-
-            const blob = new Blob([formattedContent], {type: 'text/plain;charset=utf-8'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `创意构思_${data.theme || '未命名'}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function restart() {
-            currentStep = 0;
-            data = {};
-            stopAllTimers();
-            
-            document.querySelectorAll('input, textarea').forEach(input => input.value = '');
-            document.getElementById('floatingSummary').classList.remove('visible');
-            showStep(0);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            showStep(0);
-        });
+        function exportResult(){const t=[{label:"主题",content:data.theme},{label:"核心锚点",content:data.anchor},{label:"选择理由",content:data.anchorReason},{label:"意外属性",content:data.unexpectedAttr},{label:"人物关系",content:data.relationship},{label:"前期氛围",content:data.atmosphere},{label:"观众预期",content:data.expectation},{label:"反转点",content:data.twistPoint},{label:"反转内容",content:data.twistContent},{label:"情绪弧线",content:data.emotionArc}].map(t=>`${t.label}:\n${t.content||"未填写"}\n`).join("\n--------------------\n\n"),e=new Blob([t],{type:"text/plain;charset=utf-8"}),o=document.createElement("a");o.href=URL.createObjectURL(e),o.download=`创意构思_${data.theme||"未命名"}.txt`,o.click(),URL.revokeObjectURL(o.href)}
+        function restart(){currentStep=0,data={},stopAllTimers(),document.querySelectorAll("input, textarea").forEach(t=>t.value=""),document.getElementById("floatingSummary").classList.remove("visible"),showStep(0)}
+        document.addEventListener("DOMContentLoaded",()=>showStep(0));
     </script>
 </body>
 </html>
